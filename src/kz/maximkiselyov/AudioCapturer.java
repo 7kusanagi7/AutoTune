@@ -74,6 +74,9 @@ public class AudioCapturer {
                         audioData.write(buffer, 0, cnt);
                     }
                 }
+
+                dataLine.drain();
+                dataLine.close();
             } catch (Exception e){
                 e.printStackTrace();
                 System.exit(0);
