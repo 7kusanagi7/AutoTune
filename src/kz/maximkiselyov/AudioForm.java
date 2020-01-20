@@ -8,29 +8,32 @@ public class AudioForm {
     private JButton stopBtn;
     private JButton playBtn;
 
-    private boolean isCapture = false;
-
     public AudioForm() {
+
+        AudioCapturer capturer = AudioCapturer.getInstance();
+
         captureBtn.addActionListener(actionEvent -> {
-            isCapture = true;
 
             captureBtn.setEnabled(false);
             playBtn.setEnabled(false);
             stopBtn.setEnabled(true);
 
-            audioCapture();
+            capturer.audioCapture();
         });
 
         stopBtn.addActionListener(actionEvent -> {
-            isCapture = false;
 
             stopBtn.setEnabled(false);
             captureBtn.setEnabled(true);
             playBtn.setEnabled(true);
+
+            capturer.captureStop();
         });
 
+        AudioPlayer player = new AudioPlayer();
+
         playBtn.addActionListener(actionEvent -> {
-            audioPlay();
+            //audioPlay();
         });
     }
 
