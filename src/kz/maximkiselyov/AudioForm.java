@@ -30,11 +30,9 @@ public class AudioForm {
             capturer.captureStop();
         });
 
-        AudioPlayer player = new AudioPlayer();
+        AudioPlayer player = AudioPlayer.getInstance();
 
-        playBtn.addActionListener(actionEvent -> {
-            //audioPlay();
-        });
+        playBtn.addActionListener(actionEvent -> player.audioPlay(capturer.getAudioData()));
     }
 
     public static void main(String[] args) {

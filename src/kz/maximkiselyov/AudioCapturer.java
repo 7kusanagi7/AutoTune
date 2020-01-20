@@ -15,7 +15,16 @@ public class AudioCapturer {
     private boolean isCapture = false;
 
     private AudioCapturer() {
+        try {
+            audioFormat = AudioFormatter.getDefaultAudioFormat();
 
+            DataLine.Info dataLineInfo = new DataLine.Info(TargetDataLine.class, audioFormat);
+            dataLine = (TargetDataLine) AudioSystem.getLine(dataLineInfo);
+
+        } catch (Exception e){
+            e.printStackTrace();
+            System.exit(0);
+        }
     }
 
     private static class SingletonHelper {
@@ -30,8 +39,8 @@ public class AudioCapturer {
         isCapture = true;
 
         try {
-            getDataLine().open(getAudioFormat());
-            getDataLine().start();
+            dataLine.open(audioFormat);
+            dataLine.start();
 
             Thread captureThread = new CaptureThread();
             captureThread.start();
@@ -45,37 +54,13 @@ public class AudioCapturer {
         isCapture = false;
     }
 
-    public TargetDataLine getDataLine() {
-        if(dataLine == null){
-            try {
-                DataLine.Info dataLineInfo = new DataLine.Info(TargetDataLine.class, getAudioFormat());
-                setDataLine((TargetDataLine) AudioSystem.getLine(dataLineInfo));
-            } catch (Exception e){
-                e.printStackTrace();
-                System.exit(0);
-            }
-        }
-        return dataLine;
-    }
-
-    public void setDataLine(TargetDataLine dataLine) {
-        this.dataLine = dataLine;
-    }
-
-    public AudioFormat getAudioFormat() {
-        if(audioFormat == null){
-            setAudioFormat(AudioFormater.getAudioFormat());
-        }
-        return audioFormat;
-    }
-
-    public void setAudioFormat(AudioFormat audioFormat) {
-        this.audioFormat = audioFormat;
+    public byte[] getAudioData(){
+        return audioData.toByteArray();
     }
 
     private class CaptureThread extends Thread{
 
-        private byte buffer[] = new byte[10000];
+        private byte[] buffer = new byte[10000];
 
         @Override
         public void run(){
@@ -83,7 +68,7 @@ public class AudioCapturer {
 
             try {
                 while (isCapture){
-                    int cnt = getDataLine().read(buffer, 0, buffer.length);
+                    int cnt = dataLine.read(buffer, 0, buffer.length);
 
                     if(cnt > 0){
                         audioData.write(buffer, 0, cnt);
@@ -95,5 +80,4 @@ public class AudioCapturer {
             }
         }
     }
-
 }
